@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 
 class PermutationFeatureImportance:
     """
-    Permutation Feature Importance for PyTorch models.
-
+    Compute and visualize Permutation Feature Importance (PFI).
     """
 
     def __init__(
@@ -18,6 +17,28 @@ class PermutationFeatureImportance:
         n_repeats=30,
         random_state=42
     ):
+        """
+        Initialize the Permutation Feature Importance evaluator.
+
+        Parameters
+        ----------
+        model : torch.nn.Module
+            Trained model used for feature importance evaluation.
+        X_test : torch.Tensor
+            Test feature matrix.
+        y_test : torch.Tensor
+            True labels of the test dataset.
+        feature_names : list of str
+            Names of the input features.
+        n_repeats : int, default=30
+            Number of permutations performed for each feature.
+        random_state : int, default=42
+            Random seed used to ensure reproducibility.
+
+        Returns
+        -------
+        None
+        """
 
         self.model = model
         self.X_test = X_test
@@ -27,7 +48,19 @@ class PermutationFeatureImportance:
         self.random_state = random_state
 
     def evaluate_accuracy(self, X):
-        """Evaluate model accuracy."""
+        """
+        Evaluate the model accuracy on a given dataset.
+
+        Parameters
+        ----------
+        X : torch.Tensor
+            Feature matrix used for model evaluation.
+
+        Returns
+        -------
+        float
+            Classification accuracy.
+        """
 
         self.model.eval()
 
@@ -43,7 +76,19 @@ class PermutationFeatureImportance:
         return accuracy
 
     def calculate_importance(self):
-        """Calculate permutation feature importance."""
+        """
+        Calculate feature importance by measuring the decrease
+        in model accuracy after randomly permuting each feature.
+
+        Returns
+        -------
+        baseline_accuracy : float
+            Model accuracy on the original test dataset.
+        importances : list of dict
+            Features ranked by mean importance, with each
+            dictionary containing the feature name and its
+            mean decrease in accuracy.
+        """
 
         baseline_accuracy = self.evaluate_accuracy(self.X_test)
 
@@ -90,8 +135,19 @@ class PermutationFeatureImportance:
         return baseline_accuracy, importances
 
     def plot_importance(self, importances):
+        """
+        Plot the mean decrease in accuracy for each feature.
 
-        """Visualize permutation feature importance."""
+        Parameters
+        ----------
+        importances : list of dict
+            Feature importance results returned by
+            calculate_importance().
+
+        Returns
+        -------
+        None
+        """
 
         features = [item["feature"] for item in importances]
 
@@ -115,4 +171,3 @@ class PermutationFeatureImportance:
 
         fig.tight_layout()
         plt.show()
-

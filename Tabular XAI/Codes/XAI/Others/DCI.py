@@ -15,10 +15,9 @@ from training import Trainer
 from data import Data
 
 
-
 class DropColumnImportance:
     """
-    Drop-Column Importance for PyTorch models.
+    Compute and visualize Drop-Column Feature Importance.
     """
 
     def __init__(
@@ -34,6 +33,36 @@ class DropColumnImportance:
         batch_size=32,
         random_state=42
     ):
+        """
+        Initialize the Drop-Column Importance evaluator.
+
+        Parameters
+        ----------
+        X_train : array-like
+            Training feature matrix.
+        y_train : array-like
+            Training target labels.
+        X_test : array-like
+            Test feature matrix.
+        y_test : array-like
+            Test target labels.
+        feature_names : list of str
+            Names of the input features.
+        hidden_dim : int, default=10
+            Number of neurons in the hidden layer.
+        learning_rate : float, default=0.01
+            Learning rate used by the optimizer.
+        epochs : int, default=20
+            Number of training epochs.
+        batch_size : int, default=32
+            Number of samples per training batch.
+        random_state : int, default=42
+            Random seed used for reproducibility.
+
+        Returns
+        -------
+        None
+        """
 
         self.y_train = torch.as_tensor(
             np.asarray(y_train),
@@ -65,7 +94,22 @@ class DropColumnImportance:
         self.loss_fn = nn.BCEWithLogitsLoss()
 
     def train_model(self, X_train, X_test):
-        """Train a new model and evaluate its accuracy."""
+        """
+        Train a model using the provided training features
+        and evaluate its accuracy on the test dataset.
+
+        Parameters
+        ----------
+        X_train : torch.Tensor
+            Training feature matrix.
+        X_test : torch.Tensor
+            Test feature matrix.
+
+        Returns
+        -------
+        float
+            Classification accuracy on the test dataset.
+        """
 
         train_data = Data(
             X_train.numpy(),
@@ -116,7 +160,20 @@ class DropColumnImportance:
         return accuracy
 
     def calculate_importance(self):
-        """Calculate Drop-Column Importance."""
+        """
+        Calculate feature importance by measuring the decrease
+        in test accuracy after removing each feature and
+        retraining the model.
+
+        Returns
+        -------
+        baseline_accuracy : float
+            Test accuracy of the model trained using all features.
+        importances : list of dict
+            Features ranked by importance, with each dictionary
+            containing the feature name and its decrease
+            in test accuracy.
+        """
 
         # Baseline model using all features
         baseline_accuracy = self.train_model(
@@ -167,7 +224,20 @@ class DropColumnImportance:
         return baseline_accuracy, importances
 
     def plot_importance(self, importances):
-        """Visualize Drop-Column Importance."""
+        """
+        Plot the decrease in test accuracy associated with
+        removing each feature.
+
+        Parameters
+        ----------
+        importances : list of dict
+            Feature importance results returned by
+            calculate_importance().
+
+        Returns
+        -------
+        None
+        """
 
         features = [
             item["feature"] for item in importances

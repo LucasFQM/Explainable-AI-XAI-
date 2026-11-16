@@ -2,8 +2,30 @@ import torch
 
 
 class Trainer:
+    """
+    Train a model using mini-batch gradient descent.
+    """
 
     def __init__(self, model, train_dataloader, loss_fn, optimizer):
+        """
+        Initialize the model trainer.
+
+        Parameters
+        ----------
+        model : torch.nn.Module
+            Model to be trained.
+        train_dataloader : torch.utils.data.DataLoader
+            DataLoader containing the training data.
+        loss_fn : torch.nn.Module
+            Loss function used to calculate the training error.
+        optimizer : torch.optim.Optimizer
+            Optimizer used to update the model parameters.
+
+        Returns
+        -------
+        None
+        """
+
         self.model = model
         self.train_dataloader = train_dataloader
         self.loss_fn = loss_fn
@@ -11,6 +33,19 @@ class Trainer:
         self.loss_values = []
 
     def train(self, num_epochs):
+        """
+        Train the model for a specified number of epochs.
+
+        Parameters
+        ----------
+        num_epochs : int
+            Number of training epochs.
+
+        Returns
+        -------
+        list of float
+            Average training loss for each epoch.
+        """
 
         for epoch in range(num_epochs):
 
